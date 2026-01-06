@@ -5,7 +5,8 @@ class Settings(BaseSettings):
     # Vamos validar sob demanda (nos endpoints/serviços que usam Bling).
     BLING_CLIENT_ID: str = ""
     BLING_CLIENT_SECRET: str = ""
-    REDIRECT_URI: str = "https://cathalog-sync-n31khw0rm-brunos-projects-f0960c16.vercel.app/auth/callback"
+    # URL de Redirecionamento - DEVE ser idêntica à configurada no console do Bling
+    REDIRECT_URI: str = "https://cathalog-sync-7mg5fiwzz-brunos-projects-f0960c16.vercel.app/auth/callback"
     # No Vercel, o SQLite só funciona na pasta /tmp
     DATABASE_URL: str = "sqlite:////tmp/database.db"
     
