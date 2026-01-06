@@ -65,11 +65,18 @@ async def auth_callback(code: str = Query(...)):
 def get_login_url():
     """
     Retorna a URL que o usuário deve acessar para autorizar o app.
+    Inclui o redirect_uri para evitar erros de mismatch no Bling.
     """
     assert_bling_oauth_configured()
-    # Exemplo simplificado, o ideal é gerar um state único.
     state = "random_state_here"
     base_url = "https://www.bling.com.br/Api/v3/oauth/authorize"
-    url = f"{base_url}?response_type=code&client_id={settings.BLING_CLIENT_ID}&state={state}"
+    
+    # Adicionando o redirect_uri explicitamente
+    url = (
+        f"{base_url}?response_type=code"
+        f"&client_id={settings.BLING_CLIENT_ID}"
+        f"&state={state}"
+        f"&redirect_uri={settings.REDIRECT_URI}"
+    )
     return {"url": url}
 
