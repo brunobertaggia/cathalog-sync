@@ -1,7 +1,8 @@
 from sqlmodel import Session, select
-from app.core.config import settings
 from app.core.database import engine
 from app.models.catalog import Category, AttributeRequirement
+from app.services.bling_client import BlingClient
+from typing import List, Dict, Any
 
 class NormalizationService:
     """

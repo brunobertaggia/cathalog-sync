@@ -4,6 +4,10 @@ from app.core.config import settings, assert_bling_oauth_configured
 from app.core.database import engine
 from app.models.auth import BlingToken
 from sqlmodel import Session, select
+from datetime import datetime, timedelta
+import base64
+
+router = APIRouter()
 
 @router.get("/callback")
 async def auth_callback(code: str = Query(...)):
