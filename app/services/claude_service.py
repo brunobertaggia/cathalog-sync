@@ -70,8 +70,13 @@ Exemplo de resposta (formato):
             content = response.content[0].text
             parsed = self._extract_json_object(content)
             # Garantir que todos os atributos existam no retorno
-            return {attr: parsed.get(attr, "N/A") for attr in required_attributes}
+            result = {attr: parsed.get(attr, "N/A") for attr in required_attributes}
+            return result
         except Exception as e:
-            # Em caso de erro, retorna os atributos como N/A para não travar o processo
-            return {attr: "N/A" for attr in required_attributes}
+            # Reason: Não queremos travar o processo; mas precisamos visibilidade do motivo.
+            # Não inclui segredos; apenas a mensagem do erro.
+            return {
+                **{attr: "N/A" for attr in required_attributes},
+                "_error": f"{type(e).__name__}: {str(e)[:300]}",
+            }
 

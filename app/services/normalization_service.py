@@ -30,14 +30,17 @@ class NormalizationService:
                 select(AttributeRequirement).where(AttributeRequirement.category_id == internal_category_id)
             ).all()
 
-            # 3. Buscar o produto no Bling
+            # 3. Buscar o produto no Bling para pegar o ID
             all_products = await self.bling_client.get_products(limit=100)
-            product = next((p for p in all_products if p.get("codigo") == sku), None)
+            product_summary = next((p for p in all_products if p.get("codigo") == sku), None)
 
-            if not product:
+            if not product_summary:
                 return {"sku": sku, "status": "error", "message": "Produto não encontrado no Bling"}
 
-            product_id = product.get("id")
+            product_id = product_summary.get("id")
+            
+            # NOVO: Buscar detalhes completos para a IA ter o que analisar
+            full_product = await self.bling_client.get_product_by_id(product_id)
             
             # 4. Inteligência: Preencher atributos via Claude se habilitado
             enriched_attributes = []
@@ -45,12 +48,11 @@ class NormalizationService:
             
             if use_ai and attribute_reqs:
                 required_names = [req.attribute_name for req in attribute_reqs]
-                # Busca detalhes completos do produto para a IA analisar
-                full_product = await self.bling_client.get_product_by_id(product_id)
                 
+                # Agora passamos o nome completo e a descrição real
                 ai_results = await self.claude_service.enrich_product_data(
                     product_title=full_product.get("nome", ""),
-                    product_description=full_product.get("descricaoCurta", ""),
+                    product_description=full_product.get("descricaoCurta", "") or full_product.get("nome", ""),
                     required_attributes=required_names
                 )
                 
@@ -61,6 +63,10 @@ class NormalizationService:
                         "valor": val
                     })
                     ai_details[req.attribute_name] = val
+                
+                ai_error = ai_results.get("_error")
+            else:
+                ai_error = None
 
             # 5. Preparar dados para atualização
             update_data = {
@@ -76,7 +82,12 @@ class NormalizationService:
                     "sku": sku, 
                     "status": "dry_run_pending", 
                     "new_category": category.name,
-                    "suggested_attributes": ai_details
+                    "suggested_attributes": ai_details,
+                    "ai_error": ai_error,
+                    "ai_input_preview": {
+                        "title": (full_product.get("nome", "") or "")[:120],
+                        "description": (full_product.get("descricaoCurta", "") or "")[:200],
+                    },
                 }
 
             # 6. Executar atualização real
