@@ -1,13 +1,19 @@
-from sqlmodel import Session, create_engine
+from sqlmodel import Session, create_engine, SQLModel
 from app.core.config import settings
 from app.models.catalog import Category, AttributeRequirement
+from app.models.auth import BlingToken # Importante para criar todas as tabelas
 
 engine = create_engine(settings.sqlalchemy_database_url)
+
+def create_tables():
+    """Garante que todas as tabelas sejam criadas no banco local."""
+    SQLModel.metadata.create_all(engine)
 
 def seed_initial_categories():
     """
     Popula o banco com categorias iniciais e requisitos de atributos.
     """
+    create_tables()
     with Session(engine) as session:
         # 1. Criar Categorias
         cat_cozinha = Category(name="Utilidades Domésticas > Cozinha")
