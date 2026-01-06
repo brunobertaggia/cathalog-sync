@@ -17,6 +17,9 @@ class Settings(BaseSettings):
             return self.DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
         return self.DATABASE_URL
     
+    # API Claude (Anthropic) para inteligência de dados
+    ANTHROPIC_API_KEY: str = ""
+    
     # Chave para criptografia de tokens sensíveis (AES)
     # Reason: Segurança extra para tokens armazenados no banco.
     # Observação: Por enquanto não estamos criptografando os tokens; isso será aplicado na próxima etapa.
@@ -37,5 +40,12 @@ def assert_bling_oauth_configured() -> None:
     if not settings.BLING_CLIENT_ID or not settings.BLING_CLIENT_SECRET:
         raise RuntimeError(
             "Configuração ausente: defina BLING_CLIENT_ID e BLING_CLIENT_SECRET nas Environment Variables da Vercel."
+        )
+
+def assert_claude_configured() -> None:
+    """Garante que a API Key do Claude está configurada."""
+    if not settings.ANTHROPIC_API_KEY:
+        raise RuntimeError(
+            "Configuração ausente: defina ANTHROPIC_API_KEY nas Environment Variables da Vercel."
         )
 

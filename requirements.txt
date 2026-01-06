@@ -8,3 +8,4 @@ cryptography
 pytest
 alembic
 psycopg2-binary
+anthropic

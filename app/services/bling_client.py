@@ -42,7 +42,6 @@ class BlingClient:
     async def update_product(self, product_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Atualiza um produto no Bling.
-        Reason: Permite aplicar categorias e atributos automaticamente.
         """
         token = await AuthService.get_valid_token()
         headers = {
@@ -52,10 +51,16 @@ class BlingClient:
         
         async with httpx.AsyncClient() as client:
             response = await client.patch(f"{self.BASE_URL}/produtos/{product_id}", json=data, headers=headers)
-            if response.status_code == 200 or response.status_code == 204:
+            if response.status_code in [200, 204]:
                 return {"status": "success"}
             else:
                 raise Exception(f"Erro ao atualizar produto no Bling: {response.text}")
+
+    async def get_product_characteristics(self, product_id: str) -> List[Dict[str, Any]]:
+        """Busca as características (atributos) de um produto."""
+        # Na v3, características costumam estar dentro do nó 'caracteristicas' do produto
+        product = await self.get_product_by_id(product_id)
+        return product.get("caracteristicas", [])
 
     async def create_category(self, name: str, parent_id: str = None) -> Dict[str, Any]:
         """Cria uma nova categoria no Bling."""
