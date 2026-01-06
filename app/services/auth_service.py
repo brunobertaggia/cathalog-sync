@@ -1,7 +1,8 @@
 import httpx
 from datetime import datetime, timedelta
+import base64
 from sqlmodel import Session, select
-from app.core.config import settings
+from app.core.config import settings, assert_bling_oauth_configured
 from app.core.database import engine
 from app.models.auth import BlingToken
 
@@ -16,6 +17,7 @@ class AuthService:
         Retorna um access_token válido. 
         Se o atual estiver expirado, renova automaticamente usando o refresh_token.
         """
+        assert_bling_oauth_configured()
         with Session(engine) as session:
             statement = select(BlingToken).order_by(BlingToken.created_at.desc())
             token = session.exec(statement).first()
@@ -35,6 +37,7 @@ class AuthService:
         """
         Executa o fluxo de refresh token com o Bling.
         """
+        assert_bling_oauth_configured()
         token_url = "https://www.bling.com.br/Api/v3/oauth/token"
         auth_str = f"{settings.BLING_CLIENT_ID}:{settings.BLING_CLIENT_SECRET}"
         auth_b64 = base64.b64encode(auth_str.encode()).decode()

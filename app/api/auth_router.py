@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query, HTTPException
 import httpx
-from app.core.config import settings
+from app.core.config import settings, assert_bling_oauth_configured
 from app.core.database import engine
 from app.models.auth import BlingToken
 from sqlmodel import Session, select
@@ -11,6 +11,7 @@ async def auth_callback(code: str = Query(...)):
     Endpoint de callback para o Bling OAuth 2.0.
     Troca o 'code' por 'access_token' e 'refresh_token'.
     """
+    assert_bling_oauth_configured()
     token_url = "https://www.bling.com.br/Api/v3/oauth/token"
     
     # Prepara o header de Basic Auth (client_id:client_secret em base64)
@@ -61,6 +62,7 @@ def get_login_url():
     """
     Retorna a URL que o usuário deve acessar para autorizar o app.
     """
+    assert_bling_oauth_configured()
     # Exemplo simplificado, o ideal é gerar um state único.
     state = "random_state_here"
     base_url = "https://www.bling.com.br/Api/v3/oauth/authorize"
