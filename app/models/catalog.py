@@ -29,8 +29,9 @@ class CategoryMapping(SQLModel, table=True):
     """
     id: Optional[int] = Field(default=None, primary_key=True)
     category_id: int = Field(foreign_key="category.id")
-    marketplace_id: str = Field(index=True) # Ex: 'mercado_livre', 'shopee'
-    external_category_id: str # ID da categoria no marketplace
+    marketplace_name: str = Field(index=True) # Ex: 'Mercado Livre', 'Shopee'
+    bling_store_id: str # ID da integração dentro do Bling
+    external_category_id: str # ID da categoria NO MARKETPLACE (ex: MLB1234)
     external_category_name: Optional[str] = None
     
     category: Category = Relationship(back_populates="mappings")

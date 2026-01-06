@@ -27,14 +27,15 @@ def seed_initial_categories():
         
         # 2. Criar Requisitos de Atributos (Campos que os Marketplaces pedem)
         attrs = [
-            # Atributos para Cozinha
+            # Atributos OBRIGATÓRIOS para Mercado Livre em Cozinha
             AttributeRequirement(category_id=cat_cozinha.id, marketplace_id="mercado_livre", attribute_name="Marca"),
+            AttributeRequirement(category_id=cat_cozinha.id, marketplace_id="mercado_livre", attribute_name="Modelo"),
             AttributeRequirement(category_id=cat_cozinha.id, marketplace_id="mercado_livre", attribute_name="Material"),
-            AttributeRequirement(category_id=cat_cozinha.id, marketplace_id="mercado_livre", attribute_name="Capacidade"),
             
-            # Atributos para Brinquedos
+            # Atributos OBRIGATÓRIOS para Mercado Livre em Brinquedos
+            AttributeRequirement(category_id=cat_brinquedos.id, marketplace_id="mercado_livre", attribute_name="Marca"),
+            AttributeRequirement(category_id=cat_brinquedos.id, marketplace_id="mercado_livre", attribute_name="Modelo"),
             AttributeRequirement(category_id=cat_brinquedos.id, marketplace_id="mercado_livre", attribute_name="Idade mínima recomendada"),
-            AttributeRequirement(category_id=cat_brinquedos.id, marketplace_id="mercado_livre", attribute_name="Materiais"),
         ]
         
         for attr in attrs:

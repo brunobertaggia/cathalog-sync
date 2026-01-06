@@ -23,7 +23,7 @@ git push -u origin main
 2. Crie um arquivo `.env` na raiz com os dados que te passei:
    ```env
    BLING_CLIENT_ID=ba413352eb142d7ad449a79389e450a67b38f330
-   BLING_CLIENT_SECRET=cc799fbc2d6ffa30c87944dd94885a041e42e31974f6c5fd66f94981a686
+   BLING_CLIENT_SECRET=image.png
    REDIRECT_URI=https://cathalog-sync-n31khw0rm-brunos-projects-f0960c16.vercel.app/auth/callback
    ```
 

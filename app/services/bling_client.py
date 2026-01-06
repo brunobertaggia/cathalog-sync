@@ -34,6 +34,11 @@ class BlingClient:
         response = await self._get("produtos", params={"limite": limit})
         return response.get("data", [])
 
+    async def get_stores(self) -> List[Dict[str, Any]]:
+        """Busca todas as lojas integradas no Bling."""
+        response = await self._get("lojas")
+        return response.get("data", [])
+
     async def get_product_by_id(self, product_id: str) -> Dict[str, Any]:
         """Busca os detalhes de um produto específico."""
         response = await self._get(f"produtos/{product_id}")
@@ -80,4 +85,31 @@ class BlingClient:
                 return response.json().get("data", {})
             else:
                 raise Exception(f"Erro ao criar categoria no Bling: {response.text}")
+
+    async def link_category_to_store(self, category_id: str, store_id: str, external_category_id: str) -> Dict[str, Any]:
+        """
+        Vincula uma categoria do Bling a uma categoria de um marketplace (Multiloja).
+        Reason: Essencial para exportação correta para ML, Shopee, etc.
+        """
+        data = {
+            "idCategoriaBling": int(category_id),
+            "idLoja": int(store_id),
+            "codigoNoMarketplace": external_category_id
+        }
+        
+        token = await AuthService.get_valid_token()
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Na v3, o vínculo de categorias pode ter um endpoint específico. 
+        # Vou usar o padrão de 'vinculos' se disponível ou disparar via PATCH na categoria.
+        # Nota: Ajustaremos o endpoint exato conforme a documentação técnica final da v3 para vínculos.
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f"{self.BASE_URL}/categorias/lojas", json=data, headers=headers)
+            if response.status_code in [200, 201]:
+                return response.json().get("data", {})
+            else:
+                raise Exception(f"Erro ao vincular categoria multiloja: {response.text}")
 

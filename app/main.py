@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api import auth_router, audit_router, sync_router, normalization_router
+from app.api import auth_router, audit_router, sync_router, normalization_router, stores_router
 from app.core.config import settings
 from app.core.database import engine
 from sqlmodel import SQLModel
@@ -22,6 +22,7 @@ app.include_router(auth_router.router, prefix="/auth", tags=["Auth"])
 app.include_router(audit_router.router, prefix="/audit", tags=["Audit"])
 app.include_router(sync_router.router, prefix="/sync", tags=["Sync"])
 app.include_router(normalization_router.router, prefix="/normalization", tags=["Normalization"])
+app.include_router(stores_router.router, prefix="/stores", tags=["Stores"])
 
 @app.get("/")
 def read_root():
