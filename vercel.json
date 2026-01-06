@@ -1,0 +1,24 @@
+{
+  "rewriteConfig": {
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "app/main.py"
+      }
+    ]
+  },
+  "installCommand": "pip install -r requirements.txt",
+  "builds": [
+    {
+      "src": "app/main.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app/main.py"
+    }
+  ]
+}
+
