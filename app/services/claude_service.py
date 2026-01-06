@@ -14,6 +14,27 @@ class ClaudeService:
         assert_claude_configured()
         self.client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
+    def _candidate_models(self) -> List[str]:
+        """
+        Lista de modelos candidatos em ordem de preferência.
+
+        Reason: Nem toda conta tem acesso a todos os modelos "datados".
+        """
+        # Primeiro usa o modelo configurado via env; depois tentativas comuns.
+        configured = (settings.ANTHROPIC_MODEL or "").strip()
+        fallbacks = [
+            "claude-3-5-sonnet-latest",
+            "claude-3-5-sonnet-20240620",
+            "claude-3-sonnet-20240229",
+        ]
+        models: List[str] = []
+        if configured:
+            models.append(configured)
+        for m in fallbacks:
+            if m not in models:
+                models.append(m)
+        return models
+
     @staticmethod
     def _extract_json_object(text: str) -> Dict[str, Any]:
         """
@@ -58,13 +79,22 @@ Exemplo de resposta (formato):
 """
 
         try:
-            response = self.client.messages.create(
-                model="claude-3-5-sonnet-20241022",
-                max_tokens=1000,
-                messages=[
-                    {"role": "user", "content": prompt}
-                ]
-            )
+            last_error = None
+            response = None
+            for model_name in self._candidate_models():
+                try:
+                    response = self.client.messages.create(
+                        model=model_name,
+                        max_tokens=1000,
+                        messages=[{"role": "user", "content": prompt}],
+                    )
+                    last_error = None
+                    break
+                except Exception as e:
+                    last_error = e
+                    continue
+            if response is None:
+                raise last_error or RuntimeError("Falha ao chamar Claude: nenhum modelo disponível.")
             
             # Extrair o conteúdo da resposta
             content = response.content[0].text

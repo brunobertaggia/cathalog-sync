@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     
     # API Claude (Anthropic) para inteligência de dados
     ANTHROPIC_API_KEY: str = ""
+    # Modelo padrão (use um que exista na sua conta). "latest" tende a funcionar.
+    ANTHROPIC_MODEL: str = "claude-3-5-sonnet-latest"
     
     # Chave para criptografia de tokens sensíveis (AES)
     # Reason: Segurança extra para tokens armazenados no banco.
