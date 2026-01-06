@@ -1,10 +1,8 @@
 from fastapi import FastAPI
 from app.api import auth_router, audit_router, sync_router, normalization_router
 from app.core.config import settings
-from sqlmodel import SQLModel, create_engine
-
-# Configuração do Banco de Dados (SQLite inicial para facilidade)
-engine = create_engine(settings.DATABASE_URL)
+from app.core.database import engine
+from sqlmodel import SQLModel
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)

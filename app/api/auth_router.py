@@ -1,13 +1,9 @@
 from fastapi import APIRouter, Query, HTTPException
 import httpx
 from app.core.config import settings
+from app.core.database import engine
 from app.models.auth import BlingToken
-from sqlmodel import Session, select, create_engine
-from datetime import datetime, timedelta
-import base64
-
-router = APIRouter()
-engine = create_engine(settings.DATABASE_URL)
+from sqlmodel import Session, select
 
 @router.get("/callback")
 async def auth_callback(code: str = Query(...)):

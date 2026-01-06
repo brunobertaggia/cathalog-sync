@@ -1,11 +1,9 @@
 import httpx
 from datetime import datetime, timedelta
-from sqlmodel import Session, select, create_engine
+from sqlmodel import Session, select
 from app.core.config import settings
+from app.core.database import engine
 from app.models.auth import BlingToken
-import base64
-
-engine = create_engine(settings.DATABASE_URL)
 
 class AuthService:
     """
