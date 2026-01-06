@@ -5,7 +5,8 @@ class Settings(BaseSettings):
     BLING_CLIENT_ID: str
     BLING_CLIENT_SECRET: str
     REDIRECT_URI: str = "https://cathalog-sync-n31khw0rm-brunos-projects-f0960c16.vercel.app/auth/callback"
-    DATABASE_URL: str = "sqlite:///./database.db"
+    # No Vercel, o SQLite só funciona na pasta /tmp
+    DATABASE_URL: str = "sqlite:////tmp/database.db"
     
     # Ajuste automático para strings do Supabase/Heroku se necessário
     @property
